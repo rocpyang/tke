@@ -46,22 +46,22 @@ func ValidateCluster(cluster *platform.Cluster, platformClient internalversion.P
 
 // ValidateClusterUpdate tests if an update to a cluster is valid.
 func ValidateClusterUpdate(cluster *platform.Cluster, oldCluster *platform.Cluster, platformClient internalversion.PlatformInterface) field.ErrorList {
-	fldPath := field.NewPath("spec")
+	//fldPath := field.NewPath("spec")
 
 	allErrs := apimachineryvalidation.ValidateObjectMetaUpdate(&cluster.ObjectMeta, &oldCluster.ObjectMeta, field.NewPath("metadata"))
 
-	allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.Type, oldCluster.Spec.Type, fldPath.Child("type"))...)
-	allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.NetworkDevice, oldCluster.Spec.NetworkDevice, fldPath.Child("networkDevice"))...)
-	allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.ClusterCIDR, oldCluster.Spec.ClusterCIDR, fldPath.Child("clusterCIDR"))...)
-	allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.DNSDomain, oldCluster.Spec.DNSDomain, fldPath.Child("dnsDomain"))...)
-	allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.PublicAlternativeNames, oldCluster.Spec.PublicAlternativeNames, fldPath.Child("publicAlternativeNames"))...)
-	allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.DockerExtraArgs, oldCluster.Spec.DockerExtraArgs, fldPath.Child("dockerExtraArgs"))...)
-	allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.KubeletExtraArgs, oldCluster.Spec.KubeletExtraArgs, fldPath.Child("kubeletExtraArgs"))...)
-	allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.APIServerExtraArgs, oldCluster.Spec.APIServerExtraArgs, fldPath.Child("apiServerExtraArgs"))...)
-	allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.ControllerManagerExtraArgs, oldCluster.Spec.ControllerManagerExtraArgs, fldPath.Child("controllerManagerExtraArgs"))...)
-	allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.SchedulerExtraArgs, oldCluster.Spec.SchedulerExtraArgs, fldPath.Child("schedulerExtraArgs"))...)
-
-	allErrs = append(allErrs, ValidateCluster(cluster, platformClient)...)
+	//allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.Type, oldCluster.Spec.Type, fldPath.Child("type"))...)
+	//allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.NetworkDevice, oldCluster.Spec.NetworkDevice, fldPath.Child("networkDevice"))...)
+	//allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.ClusterCIDR, oldCluster.Spec.ClusterCIDR, fldPath.Child("clusterCIDR"))...)
+	//allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.DNSDomain, oldCluster.Spec.DNSDomain, fldPath.Child("dnsDomain"))...)
+	//allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.PublicAlternativeNames, oldCluster.Spec.PublicAlternativeNames, fldPath.Child("publicAlternativeNames"))...)
+	//allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.DockerExtraArgs, oldCluster.Spec.DockerExtraArgs, fldPath.Child("dockerExtraArgs"))...)
+	//allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.KubeletExtraArgs, oldCluster.Spec.KubeletExtraArgs, fldPath.Child("kubeletExtraArgs"))...)
+	//allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.APIServerExtraArgs, oldCluster.Spec.APIServerExtraArgs, fldPath.Child("apiServerExtraArgs"))...)
+	//allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.ControllerManagerExtraArgs, oldCluster.Spec.ControllerManagerExtraArgs, fldPath.Child("controllerManagerExtraArgs"))...)
+	//allErrs = append(allErrs, apimachineryvalidation.ValidateImmutableField(cluster.Spec.SchedulerExtraArgs, oldCluster.Spec.SchedulerExtraArgs, fldPath.Child("schedulerExtraArgs"))...)
+	//
+	//allErrs = append(allErrs, ValidateCluster(cluster, platformClient)...)
 
 	return allErrs
 }
@@ -69,9 +69,9 @@ func ValidateClusterUpdate(cluster *platform.Cluster, oldCluster *platform.Clust
 // ValidateCluster validates a given ClusterSpec.
 func ValidatClusterSpec(spec *platform.ClusterSpec, fldPath *field.Path, platformClient internalversion.PlatformInterface) field.ErrorList {
 	allErrs := field.ErrorList{}
-	allErrs = append(allErrs, ValidateClusteType(spec.Type, fldPath.Child("type"))...)
-	allErrs = append(allErrs, ValidateClusterMachines(spec.Machines, fldPath.Child("machines"))...)
-	allErrs = append(allErrs, ValidateClusterFeature(&spec.Features, fldPath.Child("features"))...)
+	//allErrs = append(allErrs, ValidateClusteType(spec.Type, fldPath.Child("type"))...)
+	//allErrs = append(allErrs, ValidateClusterMachines(spec.Machines, fldPath.Child("machines"))...)
+	//allErrs = append(allErrs, ValidateClusterFeature(&spec.Features, fldPath.Child("features"))...)
 
 	return allErrs
 }
