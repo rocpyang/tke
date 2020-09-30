@@ -27,6 +27,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/sets"
 	v1clientset "tkestack.io/tke/api/client/clientset/versioned/typed/platform/v1"
 	v1 "tkestack.io/tke/api/platform/v1"
+	machineprovider "tkestack.io/tke/pkg/platform/provider/machine"
 	"tkestack.io/tke/pkg/platform/util"
 	"tkestack.io/tke/pkg/util/log"
 )
@@ -236,6 +237,7 @@ func (d *machineDeleter) finalizeMachine(machine *v1.Machine) (*v1.Machine, erro
 type deleteResourceFunc func(deleter *machineDeleter, machine *v1.Machine) error
 
 var deleteResourceFuncs = []deleteResourceFunc{
+	deleteMachineProvider,
 	deleteNode,
 }
 
@@ -257,6 +259,22 @@ func (d *machineDeleter) deleteAllContent(machine *v1.Machine) error {
 	}
 
 	log.Debug("Machine controller - deletedAllContent", log.String("machineName", machine.ObjectMeta.Name))
+	return nil
+}
+
+func deleteMachineProvider(deleter *machineDeleter, machine *v1.Machine) error {
+	log.Debug("Machine controller - deleteMachineProvider", log.String("machineName", machine.ObjectMeta.Name))
+
+	machineProvider, err := machineprovider.GetProvider(machine.Spec.Type)
+	if err != nil {
+		panic(err)
+	}
+
+	err = machineProvider.OnDelete(*machine)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
