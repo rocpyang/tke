@@ -23,6 +23,7 @@ import (
 	"reflect"
 	"time"
 
+	"golang.org/x/time/rate"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/runtime"
@@ -89,12 +90,16 @@ func NewController(
 	clusterInformer platformv1informer.ClusterInformer,
 	resyncPeriod time.Duration,
 	finalizerToken platformv1.FinalizerName) *Controller {
+	rateLimiter := workqueue.NewMaxOfRateLimiter(
+		workqueue.NewItemExponentialFailureRateLimiter(5*time.Millisecond, 1000*time.Second),
+		&workqueue.BucketRateLimiter{Limiter: rate.NewLimiter(rate.Limit(200), 400)},
+	)
 	// create the controller so we can inject the enqueue function
 	controller := &Controller{
 		client: client,
 		cache:  &clusterCache{clusterMap: make(map[string]*cachedCluster)},
 		health: &clusterHealth{clusterMap: make(map[string]*platformv1.Cluster)},
-		queue:  workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "cluster"),
+		queue:  workqueue.NewNamedRateLimitingQueue(rateLimiter, "cluster"),
 		clusterDeleter: deletion.NewClusterDeleter(client.PlatformV1().Clusters(),
 			client.PlatformV1(),
 			finalizerToken,

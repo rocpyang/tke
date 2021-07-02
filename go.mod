@@ -11,7 +11,6 @@ replace (
 
 require (
 	github.com/AlekSi/pointer v1.1.0
-	github.com/Azure/go-autorest v13.3.1+incompatible // indirect
 	github.com/Masterminds/semver v1.4.2 // indirect
 	github.com/NYTimes/gziphandler v1.1.1 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
@@ -22,7 +21,6 @@ require (
 	github.com/chartmuseum/storage v0.5.0
 	github.com/coreos/go-oidc v2.2.1+incompatible
 	github.com/coreos/prometheus-operator v0.34.0
-	github.com/deislabs/oras v0.8.0 // indirect
 	github.com/dexidp/dex v0.0.0-20200408064242-83d8853fd969
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/distribution v2.7.1+incompatible
@@ -38,7 +36,6 @@ require (
 	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.3.5 // indirect
-	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/gofuzz v1.0.0
 	github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e // indirect
 	github.com/gorilla/mux v1.7.3
@@ -78,11 +75,9 @@ require (
 	go.etcd.io/etcd v0.0.0-20191023171146-3cf2f69b5738
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20191028145041-f83a4685e152
-	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0
-	golang.org/x/tools v0.0.0-20200319210407-521f4a0cd458 // indirect
 	google.golang.org/grpc v1.26.0
 	gopkg.in/go-playground/validator.v9 v9.28.0
 	gopkg.in/ldap.v2 v2.5.1

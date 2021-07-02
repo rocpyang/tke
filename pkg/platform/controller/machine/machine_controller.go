@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"golang.org/x/time/rate"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/runtime"
@@ -93,12 +94,16 @@ func NewController(
 	machineInformer platformv1informer.MachineInformer,
 	resyncPeriod time.Duration,
 	finalizerToken v1.FinalizerName) *Controller {
+	rateLimiter := workqueue.NewMaxOfRateLimiter(
+		workqueue.NewItemExponentialFailureRateLimiter(5*time.Millisecond, 1000*time.Second),
+		&workqueue.BucketRateLimiter{Limiter: rate.NewLimiter(rate.Limit(200), 400)},
+	)
 	// create the controller so we can inject the enqueue function
 	controller := &Controller{
 		client: client,
 		cache:  &machineCache{m: make(map[string]*cachedMachine)},
 		health: &machineHealth{m: make(map[string]*v1.Machine)},
-		queue:  workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "machine"),
+		queue:  workqueue.NewNamedRateLimitingQueue(rateLimiter, "machine"),
 		deleter: deletion.NewMachineDeleter(client.PlatformV1().Machines(),
 			client.PlatformV1(),
 			finalizerToken,
