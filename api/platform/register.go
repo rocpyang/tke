@@ -119,6 +119,10 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&LBCF{},
 		&LBCFList{},
 		&LBCFProxyOptions{},
+
+		&ClusterGroupAPIResourceItems{},
+		&ClusterGroupAPIResourceItemsList{},
+		&ClusterGroupAPIResourceOptions{},
 	)
 	return nil
 }

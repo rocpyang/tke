@@ -55,7 +55,7 @@ type Storage struct {
 	PVCR              *PVCRREST
 	LogCollector      *LogCollectorREST
 	CLSLogConfig      *CLSLogConfigREST
-	HpcConfig		  *HpcREST
+	HpcConfig         *HpcREST
 	CronHPA           *CronHPAREST
 	Addon             *AddonREST
 	AddonType         *AddonTypeREST
@@ -65,6 +65,7 @@ type Storage struct {
 	LBCFBackendRecord *LBCFBackendRecordREST
 	Drain             *DrainREST
 	Proxy             *ProxyREST
+	APIResources      *APIResourcesREST
 }
 
 // NewStorage returns a Storage object that will work against clusters.
@@ -173,6 +174,10 @@ func NewStorage(optsGetter genericregistry.RESTOptionsGetter, platformClient pla
 		Proxy: &ProxyREST{
 			store: store,
 			host:  host,
+		},
+		APIResources: &APIResourcesREST{
+			store:          store,
+			platformClient: platformClient,
 		},
 	}
 }
@@ -382,6 +387,7 @@ func (r *StatusREST) New() runtime.Object {
 
 // Get retrieves the object from the storage. It is required to support Patch.
 func (r *StatusREST) Get(ctx context.Context, name string, options *metav1.GetOptions) (runtime.Object, error) {
+	log.Infof("---tao-----status")
 	return ValidateGetObjectAndTenantID(ctx, r.store, name, options)
 }
 
