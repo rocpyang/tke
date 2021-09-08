@@ -20,7 +20,6 @@ package deletion
 
 import (
 	"fmt"
-
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilerrors "k8s.io/apimachinery/pkg/util/errors"
@@ -119,6 +118,7 @@ func (d *machineDeleter) Delete(name string) error {
 	// there may still be content for us to remove
 	err = d.deleteAllContent(machine)
 	if err != nil {
+		log.Infof( " Machine controller - machine deleter ,deleteAllContent error : %s", err.Error())
 		return err
 	}
 
@@ -135,6 +135,7 @@ func (d *machineDeleter) Delete(name string) error {
 	}
 
 	// Check if we can delete now.
+	log.Info( " Machine controller - machine deleter , delete now !")
 	if d.deleteWhenDone && finalized(machine) {
 		return d.deleteMachine(machine)
 	}
@@ -243,7 +244,7 @@ var deleteResourceFuncs = []deleteResourceFunc{
 
 // deleteAllContent will use the client to delete each resource identified in machine.
 func (d *machineDeleter) deleteAllContent(machine *v1.Machine) error {
-	log.Debug("Machine controller - deleteAllContent", log.String("machineName", machine.ObjectMeta.Name))
+	log.Info("Machine controller - deleteAllContent", log.String("machineName", machine.ObjectMeta.Name))
 
 	var errs []error
 	for _, deleteFunc := range deleteResourceFuncs {
@@ -258,28 +259,36 @@ func (d *machineDeleter) deleteAllContent(machine *v1.Machine) error {
 		return utilerrors.NewAggregate(errs)
 	}
 
-	log.Debug("Machine controller - deletedAllContent", log.String("machineName", machine.ObjectMeta.Name))
+	log.Info("Machine controller - deletedAllContent", log.String("machineName", machine.ObjectMeta.Name))
 	return nil
 }
 
 func deleteMachineProvider(deleter *machineDeleter, machine *v1.Machine) error {
-	log.Debug("Machine controller - deleteMachineProvider", log.String("machineName", machine.ObjectMeta.Name))
+	log.Info("Machine controller - deleteMachineProvider", log.String("machineName", machine.ObjectMeta.Name))
 
 	machineProvider, err := machineprovider.GetProvider(machine.Spec.Type)
 	if err != nil {
 		panic(err)
 	}
+	log.Infof( "Machine controller - deleteMachineProvider, machineProvider name : %s", machineProvider.Name())
 
 	err = machineProvider.OnDelete(*machine)
 	if err != nil {
+		log.Infof( "Machine controller - deleteMachineProvider, machineProvider name : %s, err : %s ", machineProvider.Name(), err.Error())
 		return err
 	}
-
+	log.Info("Machine controller - deleteMachineProvider done")
 	return nil
 }
 
 func deleteNode(deleter *machineDeleter, machine *v1.Machine) error {
-	log.Debug("Machine controller - deleteNode", log.String("machineName", machine.ObjectMeta.Name))
+	log.Info("Machine controller - deleteNode", log.String("machineName", machine.ObjectMeta.Name))
+
+	//if machine.spec.Ip empty,just skip, the reason is cvm is not creating done
+	if machine.Spec.IP == "" {
+		log.Infof("Machine controller - deleteNode, machine.spec.IP is empty, so skip delete Node step")
+		return nil
+	}
 
 	clientset, err := util.BuildExternalClientSetWithName(deleter.platformClient, machine.Spec.ClusterName)
 	if err != nil {
@@ -295,6 +304,6 @@ func deleteNode(deleter *machineDeleter, machine *v1.Machine) error {
 			return err
 		}
 	}
-
+	log.Info("Machine controller - deleteNode done")
 	return nil
 }
