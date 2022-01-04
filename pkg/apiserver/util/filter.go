@@ -34,19 +34,23 @@ func PredicateListOptions(ctx context.Context, options *metainternal.ListOptions
 	if tenantID == "" {
 		tenantID = filter.TenantIDFrom(ctx)
 		if tenantID == "" {
+			options.ResourceVersion = "0"
 			return options
 		}
 	}
 	if options == nil {
 		return &metainternal.ListOptions{
 			FieldSelector: fields.OneTermEqualSelector("spec.tenantID", tenantID),
+			ResourceVersion: "0",
 		}
 	}
 	if options.FieldSelector == nil {
 		options.FieldSelector = fields.OneTermEqualSelector("spec.tenantID", tenantID)
+		options.ResourceVersion = "0"
 		return options
 	}
 	options.FieldSelector = fields.AndSelectors(options.FieldSelector, fields.OneTermEqualSelector("spec.tenantID", tenantID))
+	options.ResourceVersion = "0"
 	return options
 }
 

@@ -21,7 +21,6 @@ package storage
 import (
 	"context"
 	"fmt"
-
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metainternal "k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -93,6 +92,7 @@ func NewStorage(optsGetter genericregistry.RESTOptionsGetter, platformClient pla
 
 // ValidateGetObjectAndTenantID validate name and tenantID, if success return Machine
 func ValidateGetObjectAndTenantID(ctx context.Context, store *registry.Store, name string, options *metav1.GetOptions) (runtime.Object, error) {
+	options.ResourceVersion = "0"
 	obj, err := store.Get(ctx, name, options)
 	if err != nil {
 		return nil, err
@@ -134,7 +134,9 @@ func (r *REST) ShortNames() []string {
 
 // List selects resources in the storage which match to the selector. 'options' can be nil.
 func (r *REST) List(ctx context.Context, options *metainternal.ListOptions) (runtime.Object, error) {
+	log.Info("start list machine message...")
 	wrappedOptions := apiserverutil.PredicateListOptions(ctx, options)
+	log.Infof("list machine wrappedOptions: %s", wrappedOptions)
 	return r.Store.List(ctx, wrappedOptions)
 }
 
