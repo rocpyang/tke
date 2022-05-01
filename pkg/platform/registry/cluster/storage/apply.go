@@ -157,12 +157,12 @@ func (r *ApplyREST) ProducesObject(_ string) interface{} {
 }
 
 type handler struct {
-	clusterName       string
+	clusterName string
 	// 客户端
 	// Client:操作内置资源
 	// dynamicClient:操作内置资源和自定义资源
-	client            *kubernetes.Clientset
-	dynamicClient     dynamic.Interface
+	client        *kubernetes.Clientset
+	dynamicClient dynamic.Interface
 	// 存放请求体的结构
 	// {
 	//	"kind":"MyAPIObject",
@@ -191,6 +191,7 @@ func (h *handler) ServeHTTP(writer http.ResponseWriter, req *http.Request) {
 	defer func() {
 		_ = req.Body.Close()
 	}()
+	log.Info("cluster/apply/ServeHTTP.")
 	// 解码请求到ext
 	if err := h.decode(req.Body); err != nil {
 		responsewriters.WriteRawJSON(http.StatusBadRequest, errors.NewBadRequest(err.Error()).Status(), writer)
@@ -281,8 +282,10 @@ func (h *handler) apply(ctx context.Context) *metav1.Status {
 		var message string
 		var status *metav1.Status
 		if applyObj.dynamicClient != nil {
+			log.Infof("DynamicClient:applyObj %+v", applyObj)
 			message, status = createOrUpdateFromDynamicClient(ctx, applyObj.dynamicClient, applyObj.isCreateRequest, applyObj.name, applyObj.kind, applyObj.obj)
 		} else {
+			log.Infof("ClientSet:applyObj %+v", applyObj)
 			message, status = createOrUpdateFromClientSet(ctx, applyObj.restClient, applyObj.isCreateRequest, applyObj.name, applyObj.namespace, applyObj.kind, applyObj.obj)
 		}
 		if status != nil {
@@ -358,6 +361,7 @@ func createOrUpdateFromClientSet(ctx context.Context, client clientrest.Interfac
 			Do(ctx)
 		err := result.Error()
 		if err != nil {
+			log.Errorf("createOrUpdateFromClientSet error:%s", err.Error())
 			if statusError, ok := err.(*errors.StatusError); ok {
 				status := statusError.Status()
 				return "", &status

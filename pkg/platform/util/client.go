@@ -116,6 +116,8 @@ func ResourceFromKind(kind string) string {
 		return "podsecuritypolicies"
 	case "priorityclass":
 		return "priorityclasses"
+	case "endpoints":
+		return "endpoints"
 	default:
 		return kindLower + "s"
 	}
@@ -607,7 +609,7 @@ func getOrCreateClientCert(ctx context.Context, clusterWrapper *types.Cluster) (
 					"clientKeyData":  clientKeyData,
 				},
 			}
-			_,err = client.CoreV1().ConfigMaps("kube-system").Create(ctx, confMap, metav1.CreateOptions{})
+			_, err = client.CoreV1().ConfigMaps("kube-system").Create(ctx, confMap, metav1.CreateOptions{})
 			if err != nil {
 				msg := fmt.Sprintf("CreateK8s ConfigMaps of cluster %s failed, err: %s", clusterName, err.Error())
 				log.Errorf(msg)
