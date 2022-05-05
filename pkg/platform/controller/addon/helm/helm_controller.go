@@ -185,6 +185,7 @@ func (c *Controller) sync(key string) error {
 	case err != nil:
 		log.Warn("Unable to retrieve helm from store", log.String("helm", key), log.Err(err))
 	default:
+		log.Info("Begin to sync helm[CreateOrUpdate]:", log.String("helmName", key), log.String("clusterName", helm.Spec.ClusterName))
 		err = c.processCreateOrUpdate(context.Background(), helm, key)
 	}
 	return err
@@ -257,6 +258,7 @@ func (c *Controller) handlePhase(ctx context.Context, key string, cachedHelm *ca
 }
 
 func (c *Controller) doInitializing(ctx context.Context, key string, holder *v1.Helm) error {
+	log.Info("Helm doInitializing", log.String("clusterName", holder.ClusterName), log.String("version", holder.Spec.Version))
 	defer controllerutil.CatchPanic("doInitializing", "Helm")
 
 	if c.prober.Exist(key) {
@@ -281,6 +283,7 @@ func (c *Controller) doInitializing(ctx context.Context, key string, holder *v1.
 }
 
 func (c *Controller) doReinitializing(ctx context.Context, key string, helm *v1.Helm) {
+	log.Info("Helm doReinitializing", log.String("clusterName", helm.ClusterName), log.String("version", helm.Spec.Version))
 	var interval = time.Since(helm.Status.LastReInitializingTimestamp.Time)
 	var waitTime time.Duration
 	if interval >= helmTimeOut {

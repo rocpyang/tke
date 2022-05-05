@@ -22,13 +22,15 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
+	"tkestack.io/tke/pkg/util/log"
 
 	"tkestack.io/tke/pkg/util/containerregistry"
 )
 
 const (
 	// LatestVersion is latest version of addon.
-	LatestVersion = "v1.0.0"
+	V1Version     = "v1.0.0"
+	LatestVersion = "v1.1.0"
 )
 
 type Components struct {
@@ -60,8 +62,14 @@ func (c Components) Get(name string) *containerregistry.Image {
 }
 
 var versionMap = map[string]Components{
-	LatestVersion: {
+	V1Version: {
 		Tiller:  containerregistry.Image{Name: "tiller", Tag: "v2.10.0"},
+		Swift:   containerregistry.Image{Name: "swift", Tag: "0.9.0"},
+		HelmAPI: containerregistry.Image{Name: "helm-api", Tag: "v1.3"},
+	},
+	// 兼容18集群及以上
+	LatestVersion: {
+		Tiller:  containerregistry.Image{Name: "tiller", Tag: "v2.16.8"},
 		Swift:   containerregistry.Image{Name: "swift", Tag: "0.9.0"},
 		HelmAPI: containerregistry.Image{Name: "helm-api", Tag: "v1.3"},
 	},
@@ -86,6 +94,7 @@ func List() []string {
 }
 
 func Validate(version string) error {
+	log.Infof("Validate version[%s],allversion[%v]", version, versionMap)
 	_, ok := versionMap[version]
 	if !ok {
 		return fmt.Errorf("the component version definition corresponding to version %s could not be found", version)

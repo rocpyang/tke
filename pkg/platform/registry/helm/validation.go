@@ -35,6 +35,7 @@ import (
 // subdomain.
 var ValidateName = apiMachineryValidation.ValidateNamespaceName
 
+// 验证Helm
 // ValidateHelm tests if required fields in the cluster are set.
 func ValidateHelm(ctx context.Context, obj *platform.Helm, platformClient platforminternalclient.PlatformInterface) field.ErrorList {
 	allErrs := apiMachineryValidation.ValidateObjectMeta(&obj.ObjectMeta, false, ValidateName, field.NewPath("metadata"))

@@ -22,14 +22,14 @@ import (
 	"context"
 	normalerrors "errors"
 	"fmt"
-	"reflect"
-
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
+	"reflect"
 	"tkestack.io/tke/pkg/platform/controller/addon/helm/images"
 	"tkestack.io/tke/pkg/util/apiclient"
+	"tkestack.io/tke/pkg/util/log"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -86,6 +86,7 @@ func NewProvisioner(kubeClient kubernetes.Interface, option *Option) Provisioner
 }
 
 func (p *provisioner) Install(ctx context.Context) error {
+
 	// if unOfficial tiller in cluster
 	err := p.isOfficialTiller(ctx)
 	if err != nil {
@@ -95,7 +96,7 @@ func (p *provisioner) Install(ctx context.Context) error {
 	// begin install
 	kubeClient := p.kubeClient
 	option := p.option
-
+	log.Info("Begin to Install helm", log.String("version", option.version))
 	// ServiceAccount Helm
 	if err := apiclient.CreateOrUpdateServiceAccount(ctx, kubeClient, serviceAccountHelm()); err != nil {
 		return err
