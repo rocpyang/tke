@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"tkestack.io/tke/pkg/platform/util"
+	"tkestack.io/tke/pkg/platform/proxy"
 
 	appsv1 "k8s.io/api/apps/v1"
 	appsv1beta1 "k8s.io/api/apps/v1beta1"
@@ -77,7 +77,7 @@ func newDeploymentRollbacker(ctx context.Context, client kubernetes.Interface) *
 
 // Create inserts a new item according to the unique key from the object.
 func (r *RolloutUndoREST) Create(ctx context.Context, name string, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *metav1.CreateOptions) (runtime.Object, error) {
-	client, err := util.ClientSet(ctx, r.platformClient)
+	client, err := proxy.ClientSet(ctx, r.platformClient)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func (r *rollbacker) rollback(ctx context.Context, obj *appsv1beta1.DeploymentRo
 		return errors.NewBadRequest("a namespace must be specified")
 	}
 
-	deployment, err := r.client.AppsV1().Deployments(namespace).Get(obj.Name, metav1.GetOptions{})
+	deployment, err := r.client.AppsV1().Deployments(namespace).Get(ctx, obj.Name, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -165,7 +165,7 @@ func (r *rollbacker) rollback(ctx context.Context, obj *appsv1beta1.DeploymentRo
 	}
 
 	// Restore revision
-	if _, err = r.client.AppsV1().Deployments(namespace).Patch(deployment.Name, patchType, patch); err != nil {
+	if _, err = r.client.AppsV1().Deployments(namespace).Patch(ctx, deployment.Name, patchType, patch, metav1.PatchOptions{}); err != nil {
 		return errors.NewInternalError(fmt.Errorf("failed restoring revision %d: %v", obj.RollbackTo.Revision, err))
 	}
 
