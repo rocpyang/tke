@@ -20,15 +20,15 @@ package storage
 
 import (
 	"context"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apiserver/pkg/registry/generic/registry"
 	"k8s.io/apiserver/pkg/registry/rest"
 	"k8s.io/client-go/discovery"
-	restclient "k8s.io/client-go/rest"
 	platforminternalclient "tkestack.io/tke/api/client/clientset/internalversion/typed/platform/internalversion"
 	"tkestack.io/tke/api/platform"
-	"tkestack.io/tke/pkg/platform/types"
+	"tkestack.io/tke/pkg/platform/proxy"
 	"tkestack.io/tke/pkg/platform/util"
 	"tkestack.io/tke/pkg/util/log"
 )
@@ -60,23 +60,21 @@ func (r *APIResourcesREST) Get(ctx context.Context, clusterName string, options 
 		return nil, err
 	}
 
-	// 使用admin权限构造client
-	clusterWrapper, err := types.GetCluster(ctx, r.platformClient, cluster)
-	if err != nil {
-		return nil, err
-	}
-	config := &restclient.Config{}
-	config, err = clusterWrapper.RESTConfig(config)
-	if err != nil {
-		return nil, err
-	}
+	//// 使用admin权限构造client
+	//clusterWrapper, err := types.GetCluster(ctx, r.platformClient, cluster)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//config := &restclient.Config{}
+	//config, err = clusterWrapper.RESTConfig(config)
+	//if err != nil {
+	//	return nil, err
+	//}
 
-	/*
-		config, err := proxy.GetConfig(ctx, r.platformClient)
-		if err != nil {
-			return nil, errors.NewInternalError(err)
-		}
-	*/
+	config, err := proxy.GetConfig(ctx, r.platformClient)
+	if err != nil {
+		return nil, errors.NewInternalError(err)
+	}
 
 	discoveryclient, err := discovery.NewDiscoveryClientForConfig(config)
 	if err != nil {
