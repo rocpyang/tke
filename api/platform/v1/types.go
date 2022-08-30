@@ -1715,7 +1715,7 @@ type ClusterGroupAPIResourceItems struct {
 	// groupVersion is the group and version this APIResourceList is for.
 	GroupVersion string `json:"groupVersion" protobuf:"bytes,2,opt,name=groupVersion"`
 	// resources contains the name of the resources and if they are namespaced.
-	APIResources []ClusterGroupAPIResourceItem `json:"apiResources" protobuf:"bytes,3,rep,name=apiResources"`
+	APIResources []ClusterGroupAPIResourceItem `json:"resources" protobuf:"bytes,3,rep,name=apiResources"`
 }
 
 // ClusterGroupAPIResourceItem specifies the name of a resource and whether it is namespaced.
