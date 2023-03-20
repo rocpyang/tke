@@ -22,6 +22,7 @@ import (
 	"context"
 	"reflect"
 	"strings"
+	"tkestack.io/tke/pkg/util/log"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 	metainternalversion "k8s.io/apimachinery/pkg/apis/meta/internalversion"
@@ -92,7 +93,7 @@ func (s *Store) List(ctx context.Context, options *metainternalversion.ListOptio
 
 	fuzzyResourceName := filter.FuzzyResourceFrom(ctx)
 	options, fuzzyResourceName = apiserverutil.InterceptFuzzyResourceNameFromListOptions(options, fuzzyResourceName)
-
+	log.Infof("store List: fuzzyResourceName[%s] Namespace[%s] Resource[%s/%s].", fuzzyResourceName, requestInfo.Namespace, requestInfo.Resource, requestInfo.Subresource)
 	result := s.NewListFunc()
 	if err := client.
 		Get().

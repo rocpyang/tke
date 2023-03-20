@@ -492,12 +492,14 @@ func BuildClientSetWithAuth(ctx context.Context, cluster *platform.Cluster, cred
 			CertificateAuthorityData: credential.CACert,
 		}
 	}
+	ownerUin := cluster.Annotations["tkestack.io/uin"]
 	// 从上下文获取"uin" "X-Remote-User"
 	uin := filter.UinFrom(ctx)
-	log.Infof("uildClientSetWithAuth :uin %s", uin)
-	if uin != "" {
+	log.Infof("uildClientSetWithAuth :uin %s, ownerUin %s", uin, ownerUin)
+	if uin != "" && strings.Compare(uin, ownerUin) != 0 {
+		// 情况1:子账户
 		log.Infof("uildClientSetWithAuth case1[uin exist].")
-		// 情况1:存在UIN,使用证书
+		// 存在UIN,使用证书
 		// 将下面两个结构封装在一起
 		// 结构
 		//	1.platform.Cluster
@@ -517,8 +519,11 @@ func BuildClientSetWithAuth(ctx context.Context, cluster *platform.Cluster, cred
 			ClientKeyData:         clientKeyData,
 		}
 	} else {
+		// 情况2:
+		//  1）主账户
+		//  2）获取所有命名空间（伪装成子账号）
+		//  3）underlay组件访问集群（uin为空）
 		log.Infof("uildClientSetWithAuth case2[uin doesnot exist,use token admin]")
-		// 情况2:不存在UIN,使用token[直接admin权限]
 		config.AuthInfos[contextName] = &api.AuthInfo{
 			Token: *credential.Token,
 		}

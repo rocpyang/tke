@@ -80,9 +80,13 @@ func GetConfig(ctx context.Context, platformClient platforminternalclient.Platfo
 		return nil, err
 	}
 
+	// 集群所属主账号UIN
+	ownerUin := cluster.Annotations["tkestack.io/uin"]
+	log.Infof("proxy/ClientSet: ownerUin %s", ownerUin)
 	config := &rest.Config{}
 	uin := filter.UinFrom(ctx)
-	if uin != "" {
+	if uin != "" && strings.Compare(uin, ownerUin) != 0 {
+		// 情况1:子账户
 		log.Infof("proxy/ClientSet: case1[uin%s exist]", uin)
 		// 转发给api-server的请求，都需要使用当前用户的证书去访问，如果没有证书，则生成证书
 		clientCertData, clientKeyData, err := GetOrCreateClientCert(ctx, clusterWrapper)
@@ -94,6 +98,10 @@ func GetConfig(ctx context.Context, platformClient platforminternalclient.Platfo
 			return nil, err
 		}
 	} else {
+		// 情况2:
+		//  1）主账户
+		//  2）获取所有命名空间（伪装成子账号）
+		//  3）underlay组件访问集群（uin为空）
 		log.Infof("proxy/ClientSet: case2[uin doesnit exist]")
 		config, err = clusterWrapper.RESTConfig(config)
 		if err != nil {
